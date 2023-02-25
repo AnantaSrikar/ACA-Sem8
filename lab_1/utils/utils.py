@@ -23,7 +23,7 @@ def get_traces(trace_filename):
 				split_line  = trace_line.split(" ")
 				
 				# Convert 0s and 1s to True and False resp. (Python things)
-				if split_line[1] == '0':
+				if split_line[1][0] == '0':
 					split_line[1] = False
 				else:
 					split_line[1] = True
