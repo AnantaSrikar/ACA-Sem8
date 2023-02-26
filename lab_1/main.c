@@ -1,5 +1,6 @@
 /*
-	Driver code that handles IO and calls the predictors
+	Driver code that handles user IO and calls the predictors
+
 	Author: Srikar
 */
 
@@ -60,11 +61,13 @@ int main(int argc, char **argv)
 	switch(predictor_choice)
 	{
 		case 1:
+				printf("Static ALWAYS TAKEN...\n");
 				pred_traces = static_always_taken(trace_arr, num_traces);
 				break;
 
 		case 2:
-				printf("Static ALWAYS NOT TAKEN...\n");
+				printf("Static ALWAYS TNOT TAKEN...\n");
+				pred_traces = static_always_not_taken(trace_arr, num_traces);
 				break;
 
 		case 3:
