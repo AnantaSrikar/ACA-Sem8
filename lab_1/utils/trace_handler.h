@@ -14,4 +14,5 @@ typedef struct trace_entry trace_entry;
 
 // Function prototypes
 int get_num_traces(FILE*);
+trace_entry* new_trace_arr(int);
 trace_entry* get_traces(FILE*);

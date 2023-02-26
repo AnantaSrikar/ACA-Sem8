@@ -9,6 +9,7 @@
 #include <ctype.h>
 
 #include "utils/trace_handler.h"
+#include "utils/predictors.h"
 
 int main(int argc, char **argv)
 {
@@ -49,12 +50,41 @@ int main(int argc, char **argv)
 
 	trace_entry* trace_arr = get_traces(tracefile);
 
-	for(int i = 0; i < num_traces; i++)
-		printf("0x%x %d\n", trace_arr[i].branch_addr, trace_arr[i].branch_taken);
-
-
 	// Always remember to close an opened file!
 	fclose(tracefile);
+	
+	// Run the predictor based on user input
+	trace_entry* pred_traces;
+
+	printf("Running the predictor ");
+	switch(predictor_choice)
+	{
+		case 1:
+				pred_traces = static_always_taken(trace_arr, num_traces);
+				break;
+
+		case 2:
+				printf("Static ALWAYS NOT TAKEN...\n");
+				break;
+
+		case 3:
+				printf("Dynamic Last Taken...\n");
+				break;
+
+		case 4:
+				printf("Dynamic BIMODAL...\n");
+				break;
+
+		case 5:
+				printf("Dynamic - GSHARE...\n");
+				break;
+
+		default:
+				printf("If you're reading this, something very terrible happend in the code! Exiting...\n");
+	}
+
+	float accuracy = get_prediction_accuracy(trace_arr, pred_traces, num_traces);
+	printf("Accuracy: %f%%\n", accuracy);
 
 	return 0;
 }
