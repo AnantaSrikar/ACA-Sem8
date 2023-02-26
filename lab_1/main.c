@@ -72,6 +72,7 @@ int main(int argc, char **argv)
 
 		case 3:
 				printf("Dynamic Last Taken...\n");
+				pred_traces = dynamic_last_taken(trace_arr, num_traces);
 				break;
 
 		case 4:
