@@ -7,7 +7,8 @@
 # For testing the script
 import sys
 
-# Funtion to read the file and return a (bigish) list of line entries
+# Funtion to read the file and return a (bigish) 2D list  of line entries
+# returns a 2D list: trace_entries[i][0]: Branch path address, trace_entries[i][1]: True if the branch was taken and False otherwise
 def get_traces(trace_filename):
 	
 	# List of all the trace line entries

@@ -14,26 +14,59 @@ from copy import deepcopy
 from utils.utils import get_traces
 
 # Prediction for Static ALWAYS TAKEN Branch Predictor
-def always_taken_static(trace_entries):
+def static_always_taken(trace_entries):
 
 	# Copy the trace_entries
 	trace_predictions = deepcopy(trace_entries)
 	
-	# All the predictions will be true since all branches are always taken
-	for i in range(len(trace_predictions)):
-		trace_predictions[i][1] = True
+	# All the predictions will be True since all branches are always taken
+	for trace_prediction in trace_predictions:
+		trace_prediction[1] = True
 
 	return trace_predictions
 
 # Prediction for Static ALWAYS NOT TAKEN Branch Predictor
-def always_not_taken_static(trace_entries):
+def static_always_not_taken(trace_entries):
 
 	# Copy the trace_entries
 	trace_predictions = deepcopy(trace_entries)
 	
-	# All the predictions will be true since all branches are always taken
-	for i in range(len(trace_predictions)):
-		trace_predictions[i][1] = False
+	# All the predictions will be False since all branches are always taken
+	for trace_prediction in trace_predictions:
+		trace_prediction[1] = False
+
+	return trace_predictions
+
+# Prediction for Dynamic Last Taken Branch Predictor
+def dynamic_last_taken(trace_entries):
+
+	print("NOTE: This may take a while depending on the computers specs. You could grab a coffee while you wait...")
+
+	trace_predictions = []
+	
+	# Dictorionay that stores previous path for each trace
+	prev_traces_path = {}
+
+	# Iterate through each trace entry
+	for trace_entry in trace_entries:
+
+		# print(trace_entry)
+
+		branch_path_addr = trace_entry[0]
+
+		# Add trace to track if there is not prev entry.
+		# NOTE: Default assumption is that trace is taken
+		if branch_path_addr not in trace_entries:
+			prev_traces_path[branch_path_addr] = trace_entry[1]
+			trace_predictions.append([branch_path_addr, True])
+			continue
+
+		# Prediction will be the last state of the branch
+		trace_prediction.append([branch_path_addr, prev_traces_path[branch_path_addr]])
+
+		# Update the previous entry if current entry is different
+		if prev_traces_path[branch_path_addr] != trace_entry[1]:
+			prev_traces_path[branch_path_addr] = trace_entry[1]
 
 	return trace_predictions
 
@@ -57,8 +90,9 @@ def get_accuracy(trace_entries, trace_predictions):
 
 # Alternative to switch case in python
 predictor_algo_switch = {
-	1: always_taken_static,
-	2: always_not_taken_static
+	1: static_always_taken,
+	2: static_always_not_taken,
+	3: dynamic_last_taken
 }
 
 if __name__ == "__main__":
@@ -72,7 +106,7 @@ if __name__ == "__main__":
 	except ValueError:
 		print("Incorrect value entered for Predictor algorithm selection! Please check and try again")
 
-	if not (1 <= predictor_algo <= 2):
+	if not (1 <= predictor_algo <= 3):
 		print("Incorrect value entered for predector! Please check and try again")
 		exit(0)
 
