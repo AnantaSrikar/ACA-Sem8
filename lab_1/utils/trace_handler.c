@@ -4,19 +4,13 @@
 	Author: Srikar
 */
 
-#include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-// Base structure that will store a trace line entry
-struct trace_entry
-{
-	unsigned short int branch_addr;
-	bool branch_taken;
-};
+#include "trace_handler.h"
 
-typedef struct trace_entry trace_entry;
-
-int get_num_traces(FILE *tracefile)
+// Get the number of trace entries for a given tracefile
+int get_num_traces(FILE* tracefile)
 {
 	int num_traces = 0;
 
@@ -31,4 +25,28 @@ int get_num_traces(FILE *tracefile)
 	rewind(tracefile);
 
 	return num_traces;
+}
+
+// Returns a new array of trace entries for a given size
+trace_entry* new_trace_arr(int num_traces)
+{
+	trace_entry* trace_arr = (trace_entry*)malloc(num_traces * sizeof(trace_entry));
+	return trace_arr;
+}
+
+// Returns an array of all the trace entries from a given tracefile
+trace_entry* get_traces(FILE* tracefile)
+{
+	trace_entry* trace_arr = new_trace_arr(get_num_traces(tracefile));
+
+	int i = 0;
+
+	// Input all the trace entries from file into trace_arr
+	while(!feof(tracefile))
+	{
+		fscanf(tracefile, "%x %d", &trace_arr[i].branch_addr, &trace_arr[i].branch_taken);
+		i++;
+	}
+
+	return trace_arr;
 }

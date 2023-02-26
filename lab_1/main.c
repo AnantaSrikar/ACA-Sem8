@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 	// CLI Args sanity check
 	if(argc != 3)
 	{
-		printf("Wrong number of arguments passed!Please check and try again.\n");
+		printf("Wrong number of arguments passed! Please check and try again.\n");
 		return -1;
 	}
 
@@ -47,7 +47,10 @@ int main(int argc, char **argv)
 	
 	int num_traces = get_num_traces(tracefile);
 
-	printf("No of traces in %s = %d\n", argv[2], num_traces);
+	trace_entry* trace_arr = get_traces(tracefile);
+
+	for(int i = 0; i < num_traces; i++)
+		printf("0x%x %d\n", trace_arr[i].branch_addr, trace_arr[i].branch_taken);
 
 
 	// Always remember to close an opened file!
