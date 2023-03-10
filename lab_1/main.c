@@ -90,5 +90,9 @@ int main(int argc, char **argv)
 	float accuracy = get_prediction_accuracy(trace_arr, pred_traces, num_traces);
 	printf("Accuracy: %f%%\n", accuracy);
 
+	// Free the memory!!
+	free(trace_arr);
+	free(pred_traces);
+
 	return 0;
 }
