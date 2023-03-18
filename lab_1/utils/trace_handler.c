@@ -18,8 +18,12 @@ int get_num_traces(FILE* tracefile)
 
 	// Count number of lines in the file
 	while ((c = fgetc(tracefile)) != EOF)
+	{
 		if (c == '\n')
+		{
 			num_traces++;
+		}
+	}
 
 	// Reset the filepointer to read from beginning for next read
 	rewind(tracefile);
@@ -28,16 +32,16 @@ int get_num_traces(FILE* tracefile)
 }
 
 // Returns a new array of trace entries for a given size
-trace_entry* new_trace_arr(int num_traces)
+trace_entry_t* new_trace_arr(int num_traces)
 {
-	trace_entry* trace_arr = (trace_entry*)malloc(num_traces * sizeof(trace_entry));
+	trace_entry_t* trace_arr = (trace_entry_t*)malloc(num_traces * sizeof(trace_entry_t));
 	return trace_arr;
 }
 
 // Returns an array of all the trace entries from a given tracefile
-trace_entry* get_traces(FILE* tracefile)
+trace_entry_t* get_traces(FILE* tracefile)
 {
-	trace_entry* trace_arr = new_trace_arr(get_num_traces(tracefile));
+	trace_entry_t* trace_arr = new_trace_arr(get_num_traces(tracefile));
 
 	int i = 0;
 

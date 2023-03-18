@@ -15,7 +15,7 @@
 int main(int argc, char **argv)
 {
 	// CLI Args sanity check
-	if(argc != 3)
+	if(argc != 3 && argc != 4)
 	{
 		printf("Wrong number of arguments passed! Please check and try again.\n");
 		return -1;
@@ -23,19 +23,46 @@ int main(int argc, char **argv)
 
 	// Branch predictor choice should be an int
 	for(int j = 0; j < strlen(argv[1]); j++)
+	{
 		if(!isdigit(argv[1][j]))
 		{
 			printf("Incorrect input for Predictor algorithm selection! Please check and try again.\n"); // Enter only numbers!
 			return -1;
 		}
+	}
 
 	int predictor_choice = atoi(argv[1]);
+	unsigned int num_bits = 0;
+
+	// No of bits used should be an int
+	if(argc == 4)
+	{
+		for(int j = 0; j < strlen(argv[3]); j++)
+		{
+			if(!isdigit(argv[3][j]))
+			{
+				printf("Incorrect input for No. of bits! Please check and try again.\n"); // Enter only numbers!
+				return -1;
+			}
+		}
+	}
 
 	// Predictor choice should be in valid range
 	if(!(predictor_choice >= 1 && predictor_choice <= 5))
 	{
 		printf("Incorrect value entered for Predictor algorithm selection! Please check and try again.\n");
 		return -1;
+	}
+
+	// Check if no of bits is needed, based on the predictor selected
+	if(predictor_choice == 4 || predictor_choice == 5)
+	{
+		if(argc != 4)
+		{
+			printf("Wrong number of arguments passed! Please check and try again.\n");
+			return -1;
+		}
+		num_bits = atoi(argv[3]);
 	}
 
 	FILE *tracefile = fopen(argv[2], "r");
@@ -46,16 +73,21 @@ int main(int argc, char **argv)
 		printf("Entered tracefile couldn't be opened! Please check and try again.\n");
 		return -1;
 	}
+
+	else
+	{
+		printf("Reading traces from '%s'\n", argv[2]);
+	}
 	
 	int num_traces = get_num_traces(tracefile);
 
-	trace_entry* trace_arr = get_traces(tracefile);
+	trace_entry_t* trace_arr = get_traces(tracefile);
 
 	// Always remember to close an opened file!
 	fclose(tracefile);
 	
 	// Run the predictor based on user input
-	trace_entry* pred_traces;
+	trace_entry_t* pred_traces;
 
 	printf("Running the predictor ");
 	switch(predictor_choice)
@@ -66,7 +98,7 @@ int main(int argc, char **argv)
 				break;
 
 		case 2:
-				printf("Static ALWAYS TNOT TAKEN...\n");
+				printf("Static ALWAYS NOT TAKEN...\n");
 				pred_traces = static_always_not_taken(trace_arr, num_traces);
 				break;
 
@@ -77,6 +109,7 @@ int main(int argc, char **argv)
 
 		case 4:
 				printf("Dynamic BIMODAL...\n");
+				pred_traces = dynamic_bimodal(trace_arr, num_traces, num_bits);
 				break;
 
 		case 5:

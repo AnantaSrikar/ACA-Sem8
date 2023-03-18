@@ -3,16 +3,17 @@
 	Author: Srikar
 */
 
+#include<stdint.h>
+
 // Base structure that will store a trace line entry
-struct trace_entry
+// NOTE: Increase size of branch_addr if needed. Currently assuming 5-bit addresses as per tracefiles
+typedef struct trace_entry
 {
 	unsigned int branch_addr;
 	unsigned short int branch_taken;
-};
-
-typedef struct trace_entry trace_entry;
+} trace_entry_t;
 
 // Function prototypes
 int get_num_traces(FILE*);
-trace_entry* new_trace_arr(int);
-trace_entry* get_traces(FILE*);
+trace_entry_t* new_trace_arr(int);
+trace_entry_t* get_traces(FILE*);
