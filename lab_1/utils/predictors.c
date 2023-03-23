@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include<stdint.h>
 
 #include "trace_handler.h"
 
@@ -71,7 +72,7 @@ int get_num_unique_branches(trace_entry_t* trace_arr, int num_traces, uint32_t a
 	for(int i = 0; i < num_traces; i++)
 	{
 		// Checking if the current branch address is already encountered
-		uint32_t masked_branch_addr = trace_arr[i].branch_addr;// & addr_mask;
+		uint32_t masked_branch_addr = trace_arr[i].branch_addr & addr_mask;
 
 		// First element is always not found, hence append
 		if(i == 0)
@@ -157,7 +158,7 @@ trace_entry_t* dynamic_last_taken(trace_entry_t* trace_arr, int num_traces)
 		if(!found)
 		{
 			unique_branchs[trace_count].branch_addr = trace_arr[i].branch_addr;
-			trace_predictions[i].branch_taken = unique_branchs[trace_count].branch_taken = 1;	// Branch is assumed to be taken by default
+			trace_predictions[i].branch_taken = 1;	// Branch is assumed to be taken by default
 
 			// Update entry with current branch decision
 			unique_branchs[trace_count].branch_taken = trace_arr[i].branch_taken;
@@ -182,13 +183,15 @@ trace_entry_t* dynamic_bimodal(trace_entry_t* trace_arr, int num_traces, int n)
 		addr_mask |= (1 << i);
 	}
 
+	// Get all unique branches whi
 	int num_unique_branches = get_num_unique_branches(trace_arr, num_traces, addr_mask);
 	// New trace_entry_t array to store all the predictions
 	trace_entry_t* trace_predictions = new_trace_arr(num_traces);
+	
 
 	// New trace_entry_t array to keep track of all branches
 	// NOTE: It is not time optimised. This is scope for performace improvements
-	trace_entry_t* unique_branchs = new_trace_arr(num_unique_branches);
+	trace_entry_t* unique_branchs = new_trace_arr(num_unique_branches);		// We will store the 2-bit saturating counter in branch_taken, varying values from 0-3
 	int trace_count = 0;
 	
 	// Start the predictions!
@@ -201,14 +204,27 @@ trace_entry_t* dynamic_bimodal(trace_entry_t* trace_arr, int num_traces, int n)
 		// Check if the branch has been encountered in the past
 		for(int j = 0; j < num_unique_branches; j++)
 		{
-			// If the entry exists
-			if(trace_arr[i].branch_addr == unique_branchs[j].branch_addr)
+			// If the entry (of first n bits of address) exists
+			if((trace_arr[i].branch_addr & addr_mask) == unique_branchs[j].branch_addr)
 			{
-				trace_predictions[i].branch_taken = unique_branchs[j].branch_taken;
+				trace_predictions[i].branch_taken = trace_arr[j].branch_taken > 1 ? 1 : 0;		// 0 - SNT, 1 - WNT, 2 - WT, 3 - ST. Take the branch if pred > 1
 
-				// Update the last entry with current entry if they are different
-				if(unique_branchs[j].branch_taken != trace_arr[i].branch_taken)
-					unique_branchs[j].branch_taken = trace_arr[i].branch_taken;
+				// Update the counter based on current entry
+				if(trace_arr[i].branch_taken)
+				{
+					if(unique_branchs[j].branch_taken < 4)
+					{
+						unique_branchs[j].branch_taken++;
+					}
+				}
+
+				else
+				{
+					if(unique_branchs[j].branch_taken > 0)
+					{
+						unique_branchs[j].branch_taken--;
+					}
+				}
 
 				found = 1;
 				break;
@@ -218,11 +234,10 @@ trace_entry_t* dynamic_bimodal(trace_entry_t* trace_arr, int num_traces, int n)
 		// if we're encountering the branch address for the first time
 		if(!found)
 		{
-			unique_branchs[trace_count].branch_addr = trace_arr[i].branch_addr;
-			trace_predictions[i].branch_taken = unique_branchs[trace_count].branch_taken = 1;	// Branch is assumed to be taken by default
+			unique_branchs[trace_count].branch_addr = trace_arr[i].branch_addr & addr_mask;
+			trace_predictions[i].branch_taken = 1;	// Branch is assumed to be taken by default
+			unique_branchs[trace_count].branch_taken = 4;		// Assuming every branch is strongly taken
 
-			// Update entry with current branch decision
-			unique_branchs[trace_count].branch_taken = trace_arr[i].branch_taken;
 			trace_count++;
 		}
 	}

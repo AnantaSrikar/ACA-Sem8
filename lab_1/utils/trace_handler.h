@@ -3,8 +3,6 @@
 	Author: Srikar
 */
 
-#include<stdint.h>
-
 // Base structure that will store a trace line entry
 // NOTE: Increase size of branch_addr if needed. Currently assuming 5-bit addresses as per tracefiles
 typedef struct trace_entry
