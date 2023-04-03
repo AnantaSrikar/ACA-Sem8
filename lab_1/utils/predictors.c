@@ -207,7 +207,7 @@ trace_entry_t* dynamic_bimodal(trace_entry_t* trace_arr, int num_traces, int n)
 			// If the entry (of first n bits of address) exists
 			if((trace_arr[i].branch_addr & addr_mask) == unique_branchs[j].branch_addr)
 			{
-				trace_predictions[i].branch_taken = trace_arr[j].branch_taken > 1 ? 1 : 0;		// 0 - SNT, 1 - WNT, 2 - WT, 3 - ST. Take the branch if pred > 1
+				trace_predictions[i].branch_taken = unique_branchs[j].branch_taken > 1 ? 1 : 0;		// 0 - SNT, 1 - WNT, 2 - WT, 3 - ST. Take the branch if pred > 1
 
 				// Update the counter based on current entry
 				if(trace_arr[i].branch_taken)
