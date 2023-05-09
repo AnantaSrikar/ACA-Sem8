@@ -248,7 +248,6 @@ trace_entry_t* dynamic_bimodal(trace_entry_t* trace_arr, int num_traces, int n)
 	return trace_predictions;
 }
 
-
 /**
  * @brief Dynamic BIMODAL Branch Predictor with Global Branch History
  * 
@@ -277,6 +276,12 @@ trace_entry_t* dynamic_gshare(trace_entry_t* trace_arr, int num_traces, int n, i
 	// NOTE: It is not time optimised. This is scope for performace improvements
 	trace_entry_t* unique_branchs = new_trace_arr(num_unique_branches);		// We will store the 2-bit saturating counter in branch_taken, varying values from 0-3
 	int trace_count = 0;
+
+	// Run dynamic bimodal if h = 0
+	if(h == 0)
+	{
+		return dynamic_bimodal(trace_arr, num_traces, n);
+	}
 
 	// History tracking
 	trace_entry_t* global_history = new_trace_arr(h);
