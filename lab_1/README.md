@@ -16,10 +16,14 @@ The program can run the following branch predictors:
 5. Dynamic BIMODAL Branch Predictor with Global Branch History
 
 To run the executable, the syntax is as follows:
-```./main <branch_predictor_num> <relative_tracefile_path> <additional_args>```
+```
+./main <branch_predictor_num> <relative_tracefile_path> <additional_args>
+```
 
 For example, if you want to run `Dynamic Last Taken Branch Predictor` on tracefile `traces/trace_03`, the command would be:
-```./main 1 traces/trace_03`
+```
+./main 1 traces/trace_03
+```
 
 NOTE:
 - Dynamic BIMODAL Branch Predictor needs an additional argument, for the number of bits in the program counter.
