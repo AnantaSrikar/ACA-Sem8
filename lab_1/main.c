@@ -15,7 +15,7 @@
 int main(int argc, char **argv)
 {
 	// CLI Args sanity check
-	if(argc != 3 && argc != 4)
+	if(!(argc >= 3 && argc <= 5))
 	{
 		printf("Wrong number of arguments passed! Please check and try again.\n");
 		return -1;
@@ -33,16 +33,20 @@ int main(int argc, char **argv)
 
 	int predictor_choice = atoi(argv[1]);
 	unsigned int num_bits = 0;
+	unsigned int hist_bits = 0;
 
 	// No of bits used should be an int
-	if(argc == 4)
+	if(argc > 3)
 	{
-		for(int j = 0; j < strlen(argv[3]); j++)
+		for(int i = 3; i < argc; i++)
 		{
-			if(!isdigit(argv[3][j]))
+			for(int j = 0; j < strlen(argv[i]); j++)
 			{
-				printf("Incorrect input for No. of bits! Please check and try again.\n"); // Enter only numbers!
-				return -1;
+				if(!isdigit(argv[i][j]))
+				{
+					printf("Incorrect input for No. of bits! Please check and try again.\n"); // Enter only numbers!
+					return -1;
+				}
 			}
 		}
 	}
@@ -55,14 +59,26 @@ int main(int argc, char **argv)
 	}
 
 	// Check if no of bits is needed, based on the predictor selected
-	if(predictor_choice == 4 || predictor_choice == 5)
+	if(predictor_choice > 3)
 	{
-		if(argc != 4)
+		if(argc != predictor_choice)	// These are coincidentally similar lol, no real logic tbh
 		{
 			printf("Wrong number of arguments passed! Please check and try again.\n");
 			return -1;
 		}
-		num_bits = atoi(argv[3]);
+
+		switch(predictor_choice)
+		{
+			case 5:
+				hist_bits = atoi(argv[4]);
+			
+			case 4:
+				num_bits = atoi(argv[3]);
+				break;
+			
+			default:
+				printf("Something terrible must've happened, you should not be seeing this!\n");
+		}
 	}
 
 	FILE *tracefile = fopen(argv[2], "r");
@@ -114,6 +130,7 @@ int main(int argc, char **argv)
 
 		case 5:
 				printf("Dynamic - GSHARE...\n");
+				pred_traces = dynamic_gshare(trace_arr, num_traces, num_bits, hist_bits);
 				break;
 
 		default:
